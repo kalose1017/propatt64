@@ -25,7 +25,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     {
         if (action == GLFW_PRESS) // 마우스를 클릭했을 때
         {
-            IsRightBtnDown = true;
+            IsRightBtnDown = true; 
             IsRightBtnDrag = false;
         }
         else if (action == GLFW_RELEASE) // 마우스 클릭을 해제했을 때
@@ -45,13 +45,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 // 마우스 이동 콜백 함수
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-    if (IsRightBtnDown && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) // 오른쪽 마우스 버튼을 누른 상태가 지속될 때
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) // 오른쪽 마우스 버튼을 누른 상태가 지속될 때
     {
         IsRightBtnDrag = true;
         IsLeftBtnDrag = false;
         glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // 화면을 파란색으로 변경
     }
-    else if (IsLeftBtnDown && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) // 왼쪽 마우스 버튼을 누른 상태가 지속될 때
+    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) // 왼쪽 마우스 버튼을 누른 상태가 지속될 때
     {
         IsRightBtnDrag = false;
         IsLeftBtnDrag = true;
