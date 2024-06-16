@@ -4,11 +4,14 @@
 #include <iostream>
 #include <chrono>
 
-float blueBoxY = -0.95f;
+float blueBoxY = -0.95f; // 파란색 상자의 초기 위치 (바닥)
 float blueBoxSpeed = 0.0f;
-const float blueJumpSpeed = 5.0f; // 점프 힘 적용
-const float gravity = -9.8f;  // 중력 가속도 적용
+const float maxJumpSpeed = 10.0f; // 최대 점프 속도
+const float gravity = -9.8f; // 중력 가속도
 bool isJumping = false;
+bool isFalling = false; // 하강 중인지 여부
+bool isSpacePressed = false;
+const float speedIncrement = 0.1f; // 점프 속도 증가량
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -16,10 +19,16 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS & !isJumping) // 스페이스를 눌린 상태에서 점프상태가 아닐 때 작동
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS && !isJumping) // 스페이스바를 누르면 점프 시작
     {
-        isJumping = true; // 점프 상태라는 걸 표시
-        blueBoxSpeed = blueJumpSpeed; // blueBoxSpeed에 blueJumpSpeed를 대입
+        isJumping = true; // 점프 상태로 설정
+        isFalling = false; // 하강 상태 해제
+        blueBoxSpeed = 2.0f; // 초기 점프 속도 설정
+        isSpacePressed = true; // 스페이스바 눌림 상태 설정
+    }
+    if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) // 스페이스바를 떼면
+    {
+        isSpacePressed = false; // 스페이스바 눌림 상태 해제
     }
 }
 
@@ -30,13 +39,29 @@ void errorCallback(int error, const char* description)
 
 void gravityBox(float deltaTime)
 {
-    blueBoxSpeed += gravity * deltaTime;  // blueBoxSpeed에 gravity를 값을 더함
-    blueBoxY += blueBoxSpeed * deltaTime;  // blueBoxSpeed를 적용하여 blueBoxY의 위치를 변경
+    if (isSpacePressed && isJumping && !isFalling) // 스페이스바가 눌린 상태에서 점프 중이고 하강 중이 아니면
+    {
+        blueBoxSpeed += speedIncrement; // 점프 속도 증가
+        if (blueBoxSpeed > maxJumpSpeed) // 최대 점프 속도 제한
+        {
+            blueBoxSpeed = maxJumpSpeed;
+        }
+    }
+
+    blueBoxSpeed += gravity * deltaTime;  // 중력 적용
+    blueBoxY += blueBoxSpeed * deltaTime;  // 속도를 위치에 적용
+
+    if (blueBoxSpeed < 0) // 상향 속도가 0보다 작아지면 하강 상태로 전환
+    {
+        isFalling = true;
+    }
+
     if (blueBoxY <= -0.95f)
     {
-        blueBoxY = -0.95f; // 파란색 사각형 위치를 고정
-        blueBoxSpeed = 0.0f;  // 파란색 사각형의 속도 제거
-        isJumping = false; // 점프 상태가 아니라는 표시
+        blueBoxY = -0.95f; // 바닥에 닿았을 때 위치 고정
+        blueBoxSpeed = 0.0f; // 속도 제거
+        isJumping = false; // 점프 상태 해제
+        isFalling = false; // 하강 상태 해제
     }
 }
 
@@ -54,10 +79,10 @@ void render()
     // 파란색 사각형 그리기
     glBegin(GL_POLYGON);
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex2f(-0.1f, blueBoxY + 0.2f); // 위쪽 꼭짓점들은 한 변의 길이를 더 더하여 사각형의 형태 유지
+    glVertex2f(-0.1f, blueBoxY + 0.2f); // 사각형의 윗 변
     glVertex2f(-0.1f, blueBoxY);
     glVertex2f(0.1f, blueBoxY);
-    glVertex2f(0.1f, blueBoxY + 0.2f); // 동일한거 아시죠?
+    glVertex2f(0.1f, blueBoxY + 0.2f); // 사각형의 윗 변
     glEnd();
 }
 
@@ -68,7 +93,7 @@ int main()
     if (!glfwInit())
         return -1;
 
-    window = glfwCreateWindow(700, 700, "Dino", NULL, NULL);
+    window = glfwCreateWindow(1000, 1000, "Dino", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -81,13 +106,13 @@ int main()
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    auto previousTime = std::chrono::high_resolution_clock::now(); //이전 시간에 컴퓨터의 현재 시간을 불러옴
+    auto previousTime = std::chrono::high_resolution_clock::now(); // 현재 시간 가져오기
 
     while (!glfwWindowShouldClose(window))
     {
-        auto currentTime = std::chrono::high_resolution_clock::now(); //현재 시간에 컴퓨터의 현재 시간을 불러옴
-        std::chrono::duration<float> deltaTime = currentTime - previousTime; //deltaTime 변수에 현재 시간에서 이전 시간을 빼서 컴퓨터의 처리 속도 계산
-        previousTime = currentTime; // 이전 시간을 현재 시간으로 변환
+        auto currentTime = std::chrono::high_resolution_clock::now(); // 현재 시간 가져오기
+        std::chrono::duration<float> deltaTime = currentTime - previousTime; // 경과 시간 계산
+        previousTime = currentTime; // 이전 시간 갱신
 
         glfwPollEvents();
         glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
