@@ -1,5 +1,6 @@
 #include "Object.h"
 #include "Transform.h"
+#include <cmath> // cos와 sin 함수 사용을 위해 추가
 
 void PixelToOpenGL(float FloorXpixel, float FloorYpixel) {
     int Width = 800;
@@ -15,19 +16,19 @@ void Player::drawPlayer() {
     // 검은색 테두리 사각형
     glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_POLYGON);
-    PixelToOpenGL(97.0f, posY - 3.0f);
-    PixelToOpenGL(97.0f, posY + 53.0f);
-    PixelToOpenGL(153.0f, posY + 53.0f);
-    PixelToOpenGL(153.0f, posY - 3.0f);
+    PixelToOpenGL(posX - 3.0f, posY - 3.0f);
+    PixelToOpenGL(posX - 3.0f, posY + height + 3.0f);
+    PixelToOpenGL(posX + width + 3.0f, posY + height + 3.0f);
+    PixelToOpenGL(posX + width + 3.0f, posY - 3.0f);
     glEnd();
 
     // 빨간색 사각형
     glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_POLYGON);
-    PixelToOpenGL(100.0f, posY);
-    PixelToOpenGL(100.0f, posY + 50.0f); // 50 픽셀 높이
-    PixelToOpenGL(150.0f, posY + 50.0f);
-    PixelToOpenGL(150.0f, posY);
+    PixelToOpenGL(posX, posY);
+    PixelToOpenGL(posX, posY + height);
+    PixelToOpenGL(posX + width, posY + height);
+    PixelToOpenGL(posX + width, posY);
     glEnd();
 }
 
@@ -36,29 +37,29 @@ void EnemyBlock::drawCac() {
     glBegin(GL_POLYGON);
     PixelToOpenGL(posX1, 400.0f);
     PixelToOpenGL(posX1, 500.0f);
-    PixelToOpenGL(posX1 + 50.0f, 500.0f);
-    PixelToOpenGL(posX1 + 50.0f, 400.0f);
+    PixelToOpenGL(posX1 + width, 500.0f);
+    PixelToOpenGL(posX1 + width, 400.0f);
     glEnd();
 
     glBegin(GL_POLYGON);
     PixelToOpenGL(posX2, 200.0f);
     PixelToOpenGL(posX2, 500.0f);
-    PixelToOpenGL(posX2 + 50.0f, 500.0f);
-    PixelToOpenGL(posX2 + 50.0f, 200.0f);
+    PixelToOpenGL(posX2 + width, 500.0f);
+    PixelToOpenGL(posX2 + width, 200.0f);
     glEnd();
 
     glBegin(GL_POLYGON);
     PixelToOpenGL(posX3, 400.0f);
     PixelToOpenGL(posX3, 500.0f);
-    PixelToOpenGL(posX3 + 50.0f, 500.0f);
-    PixelToOpenGL(posX3 + 50.0f, 400.0f);
+    PixelToOpenGL(posX3 + width, 500.0f);
+    PixelToOpenGL(posX3 + width, 400.0f);
     glEnd();
 
     glBegin(GL_POLYGON);
     PixelToOpenGL(posX4, 200.0f);
     PixelToOpenGL(posX4, 500.0f);
-    PixelToOpenGL(posX4 + 50.0f, 500.0f);
-    PixelToOpenGL(posX4 + 50.0f, 200.0f);
+    PixelToOpenGL(posX4 + width, 500.0f);
+    PixelToOpenGL(posX4 + width, 200.0f);
     glEnd();
 }
 
@@ -72,6 +73,26 @@ void Floor::drawFloor() {
     glEnd();
 }
 
-int PhysicsAABB(Object A, Object B) {
-    return 0;
+void Star::drawStar() const {
+    float halfSize = size / 2.0f;
+    float angle = 72.0f * 3.141592 / 180.0f; // 72 degrees in radians
+    glColor3ub(255, 255, 0); // Yellow color for star
+
+    glBegin(GL_TRIANGLE_FAN);
+    PixelToOpenGL(posX, posY); // Center of star
+
+    for (int i = 0; i <= 5; ++i) {
+        float xVertex = posX + halfSize * cos(i * 2 * angle);
+        float yVertex = posY + halfSize * sin(i * 2 * angle);
+        PixelToOpenGL(xVertex, yVertex);
+    }
+
+    glEnd();
+}
+
+int PhysicsAABB(const Object& A, const Object& B) {
+    return (A.posX < B.posX + B.width &&
+        A.posX + A.width > B.posX &&
+        A.posY < B.posY + B.height &&
+        A.posY + A.height > B.posY);
 }

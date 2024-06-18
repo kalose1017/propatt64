@@ -1,15 +1,40 @@
 #include "Transform.h"
+#include "Object.h"
+#include <cstdlib>
+#include <cmath>
 
-void updatePosition(float& x, float speed, float deltaTime) {
+// Simple pseudo-random number generator
+unsigned int seed = 0;
+
+float pseudoRandom() {
+    seed = (8253729 * seed + 2396403); // Example constants
+    return seed * (1.0f / 4294967296.0f);
+}
+
+float randomFloat(float min, float max) {
+    return min + (max - min) * pseudoRandom();
+}
+
+void updateEnemyPosition(float& x, float speed, float deltaTime) {
     x -= speed * deltaTime;
 }
 
-void resetPosition(float& posX1, float& posX2, float& posX3, float& posX4, float resetThreshold) {
-    if (posX1 < resetThreshold) {
-        posX1 = 800.0f;
-        posX2 = 1600.0f;
-        posX3 = 2400.0f;
-        posX4 = 2500.0f;
+void updateStarPosition(float& x, float speed, float deltaTime) {
+    x -= speed * deltaTime;
+}
+
+void resetEnemyPositions(EnemyBlock& enemy, float resetThreshold) {
+    if (enemy.posX4 < resetThreshold) {
+        enemy.posX1 = 800.0f;
+        enemy.posX2 = 1600.0f;
+        enemy.posX3 = 2400.0f;
+        enemy.posX4 = 2500.0f;
+    }
+}
+
+void resetStarPosition(float& x, float resetThreshold, float newX) {
+    if (x < resetThreshold) {
+        x = newX;
     }
 }
 

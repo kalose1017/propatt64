@@ -1,24 +1,29 @@
 #pragma once
+
+#include "Object.h"
+
 namespace Transform
 {
-	struct Vertex
-	{
-		float x;
-		float y;
-	};
+    struct Vertex
+    {
+        float x;
+        float y;
+    };
 
-	struct Vector
-	{
-		float x_meter;
-		float y_meter;
-	};
+    struct Vector
+    {
+        float x_meter;
+        float y_meter;
+    };
 
-	Vertex MoveVertex(Vertex point, Vector meter);
-	Vertex RotateVertex(Vertex point, float angle_degree);
-	Vertex ScaleVertex(Vertex point, Vector meter);
-
+    Vertex MoveVertex(Vertex point, Vector meter);
+    Vertex RotateVertex(Vertex point, float angle_degree);
+    Vertex ScaleVertex(Vertex point, Vector meter);
 };
 
-void updatePosition(float& x, float speed, float deltaTime);
-void resetPosition(float& posX1, float& posX2, float& posX3, float& posX4, float resetThreshold);
+void updateEnemyPosition(float& x, float speed, float deltaTime);
+void updateStarPosition(float& x, float speed, float deltaTime);
+void resetEnemyPositions(EnemyBlock& enemy, float resetThreshold);
+void resetStarPosition(float& x, float resetThreshold, float newX);
 void applyGravityAndJump(float& posY, float& velocityY, bool& isJumping, float gravity, float deltaTime);
+float randomFloat(float min, float max);

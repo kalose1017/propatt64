@@ -34,8 +34,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 int setVertexRotation(float x, float y, float angle_degree)
 { // 태양 그리기 기초 함수
-    float angle = angle_degree / 180 * M_PI;
-    glVertex2f(x * cos(angle) - (y * sin(angle)), x * sin(angle) + (y * cos(angle)));
+    float angle = angle_degree * M_PI / 180;
+    glVertex2f(x * cos(angle) - y * sin(angle), x * sin(angle) + y * cos(angle));
     return 0;
 }
 
