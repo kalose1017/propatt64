@@ -1,6 +1,5 @@
 #include "Transform.h"
 #include "Object.h"
-#include <cstdlib>
 #include <cmath>
 
 // Simple pseudo-random number generator

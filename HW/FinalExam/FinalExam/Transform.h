@@ -20,7 +20,6 @@ namespace Transform
     Vertex RotateVertex(Vertex point, float angle_degree);
     Vertex ScaleVertex(Vertex point, Vector meter);
 };
-
 void updateEnemyPosition(float& x, float speed, float deltaTime);
 void updateStarPosition(float& x, float speed, float deltaTime);
 void resetEnemyPositions(EnemyBlock& enemy, float resetThreshold);
